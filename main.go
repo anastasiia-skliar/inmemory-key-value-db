@@ -22,4 +22,7 @@ func main() {
 
 	db.Commit()
 	fmt.Println(db.Get("a")) // Output: 1
+
+	db.Delete("a")
+	fmt.Println(db.Get("a")) // Output: nil
 }

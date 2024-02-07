@@ -1,4 +1,6 @@
-# In-Memory Database in Go
+# In-Memory
+
+DISCLAIMER: That is an exercise, do use or copy.
 
 This project implements a simple in-memory database in Go with support for transactions and key-value storage. In addition, the database supports nested transactions, which means you are able to create a transaction within a transaction. If parent transaction is commited, all uncommited child transaction data is lost.
 
