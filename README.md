@@ -26,19 +26,19 @@ go run main.go
 ### Usage
 Import the package in your Go code:
 ```go
-import "github.com/yourusername/in-memory-database"
+import "github.com/anastasiia-skliar/inmemory-key-value-db/database"
 ```
 Create a new instance of the database:
 ```go
-db := inmemory.NewInMemoryDatabase()
+db := database.NewInMemoryDatabase()
 ```
 Use the provided methods to interact with the database:
 ```go
-db.startTransaction()
-db.set("key", "value")
-value := db.get("key")
+db.StartTransaction()
+db.Set("key", "value")
+value := db.Get("key")
 fmt.Println(value) // Output: value
-db.commit()
+db.Commit()
 ```
 ### Testing
 To run tests, use the following command:
