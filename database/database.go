@@ -29,7 +29,7 @@ type InMemoryDatabase struct {
 }
 
 func NewInMemoryDatabase() *InMemoryDatabase {
-	logger := log.New(os.Stdout, "", log.LstdFlags)
+	logger := log.New(os.Stdout, "", log.LstdFlags|log.Lshortfile)
 	return &InMemoryDatabase{
 		currentTransaction: nil,
 		logger:             logger,
