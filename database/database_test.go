@@ -30,7 +30,7 @@ func TestDatabase(t *testing.T) {
 				db.Rollback()
 			},
 			assertions: func(db *InMemoryDatabase, t *testing.T) {
-				if val := db.Get("a"); val != "" {
+				if val := db.Get("a"); val != nil {
 					t.Errorf("Expected value for key 'a' to be empty after rollback, got '%s'", val)
 				}
 			},
@@ -120,8 +120,77 @@ func TestDelete(t *testing.T) {
 				db.Delete("a")
 			},
 			assertions: func(db *InMemoryDatabase, t *testing.T) {
-				if val := db.Get("a"); val != "" {
+				if val := db.Get("a"); val != nil {
 					t.Errorf("Expected value for key 'a' to be empty after deletion, got '%s'", val)
+				}
+			},
+		},
+		{
+			name: "Delete without transaction",
+			operations: func(db *InMemoryDatabase) {
+				db.Set("a", "1")
+				db.Delete("a")
+			},
+			assertions: func(db *InMemoryDatabase, t *testing.T) {
+				if val := db.Get("a"); val != nil {
+					t.Errorf("Expected value for key 'a' to be empty after deletion, got '%s'", val)
+				}
+			},
+		},
+		{
+			name: "Delete and rollback",
+			operations: func(db *InMemoryDatabase) {
+				db.Set("a", "1")
+				db.StartTransaction()
+				db.Delete("a")
+				db.Rollback()
+			},
+			assertions: func(db *InMemoryDatabase, t *testing.T) {
+				if val := db.Get("a"); val != "1" {
+					t.Errorf("Expected value for key 'a' to '1', got '%s'", val)
+				}
+			},
+		},
+		{
+			name: "Delete and commit",
+			operations: func(db *InMemoryDatabase) {
+				db.Set("a", "1")
+				db.StartTransaction()
+				db.Delete("a")
+				db.Commit()
+			},
+			assertions: func(db *InMemoryDatabase, t *testing.T) {
+				if val := db.Get("a"); val != nil {
+					t.Errorf("Expected value for key 'a' to '1', got '%s'", val)
+				}
+			},
+		},
+		{
+			name: "Delete and get in child transaction",
+			operations: func(db *InMemoryDatabase) {
+				db.Set("a", "1")
+				db.StartTransaction()
+				db.Delete("a")
+				db.StartTransaction()
+			},
+			assertions: func(db *InMemoryDatabase, t *testing.T) {
+				if val := db.Get("a"); val != nil {
+					t.Errorf("Expected value for key 'a' to be '1', got '%s'", val)
+				}
+			},
+		},
+		{
+			name: "Delete in child transaction",
+			operations: func(db *InMemoryDatabase) {
+				db.Set("a", "1")
+				db.StartTransaction()
+				db.StartTransaction()
+				db.Delete("a")
+				db.Commit()
+			},
+			assertions: func(db *InMemoryDatabase, t *testing.T) {
+				if val := db.Get("a"); val != nil {
+					t.Errorf("Expected value for key 'a' to be blank, got '%s'", val)
 				}
 			},
 		},
@@ -139,7 +208,7 @@ func TestDelete(t *testing.T) {
 func TestNonexistentKey(t *testing.T) {
 	db := NewInMemoryDatabase()
 
-	if val := db.Get("nonexistent"); val != "" {
+	if val := db.Get("nonexistent"); val != nil {
 		t.Errorf("Expected value for nonexistent key to be empty, got '%s'", val)
 	}
 }
@@ -163,7 +232,7 @@ func TestGetAfterRollback(t *testing.T) {
 	db.Set("a", "1")
 	db.Rollback()
 
-	if val := db.Get("a"); val != "" {
+	if val := db.Get("a"); val != nil {
 		t.Errorf("Expected value for key 'a' to be empty after rollback, got '%s'", val)
 	}
 }

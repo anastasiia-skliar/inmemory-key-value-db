@@ -69,7 +69,7 @@ func (db *InMemoryDatabase) Commit() {
 		}
 		// Apply delete operations
 		for k := range db.currentTransaction.deleted {
-			delete(db.currentTransaction.parent.data, k)
+			db.currentTransaction.parent.deleted[k] = true
 		}
 	} else {
 		// if this is a main transaction - copy data to db storage
